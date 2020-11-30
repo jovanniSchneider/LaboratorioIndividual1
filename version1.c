@@ -9,11 +9,7 @@
 void limpiarConsola(){
     #if defined(_WIN32)
     #define LIMPIAR 0
-    #endif
-    #if defined(__linux__)
-    #define LIMPIAR 1
-    #endif
-    #if defined(__MACH__)
+    #else
     #define LIMPIAR 1
     #endif
     switch (LIMPIAR)
