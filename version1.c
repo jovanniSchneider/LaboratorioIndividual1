@@ -8,33 +8,23 @@
 //Función: Detecta el sistema operativo en uso y limpia la consola
 void limpiarConsola(){
     #if defined(_WIN32)
-    #include <windows.h>
     #define LIMPIAR 0
-    #define CANTIDAD 3
     #endif
     #if defined(__linux__)
-    #include <unistd.h>
     #define LIMPIAR 1
-    #define CANTIDAD 5
     #endif
     #if defined(__MACH__)
-    #include <unistd.h>
     #define LIMPIAR 1
-    #define CANTIDAD 5
     #endif
-    char string[CANTIDAD];
-    char paraWin[3] = "cls";
-    char paraLinuxYMac[5] = "clear";
     switch (LIMPIAR)
     {
     case 0:
-        strcpy(string,paraWin);
+        system("cls");
         break;
     case 1:
-        strcpy(string,paraLinuxYMac);
+        system("clear");
         break;
     }
-    system(string);
 }
 
 //Entrada: El nombre del archivo de prueba
@@ -56,12 +46,14 @@ int verificarArchivo(char* nombre){
 }
 int main()
 { 
+    limpiarConsola();
     char nombre[100];
     printf("Escriba el nombre del archivo de prueba: ");
     fflush(stdin);
     scanf("%s",&nombre);
     int existencia = verificarArchivo(nombre);
+    printf("Presione cualquier tecla para continuar...\n");
+    fflush(stdin);
     getchar();
-    limpiarConsola();
     return 0;
 }
