@@ -19,7 +19,7 @@ VERSIÓN DEL CODIGO: 1.0
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+#include <uchar.h>
 
 //-------------Declaración de funciones--------------
 int detectarSO();
@@ -61,6 +61,13 @@ void limpiarConsola(){
 
 //--------------------------------------------------------
 
+void presioneEnter(){
+    printf("Presione enter para continuar...\n");
+    getchar();
+}
+
+//--------------------------------------------------------
+
 //Entrada: El nombre del archivo de prueba
 //Salida: Un 1 si el archivo de prueba existe en la carpeta de ejecución del codigo y 0 en caso contrario
 //Función: Verifica si el archivo de prueba existe en la carpeta de ejecución del codigo
@@ -82,15 +89,11 @@ int verificarArchivo(char* nombre){
 //--------------Función/Bloque principal-----------------------
 int main()
 { 
-    limpiarConsola();
+    presioneEnter();
     char nombre[100];
     printf("Escriba el nombre del archivo de prueba: ");
-    fflush(stdin);
-    scanf("%s",&nombre);
+    gets(nombre);
     int existencia = verificarArchivo(nombre);
-    printf("Presione cualquier tecla para continuar...\n");
-    fflush(stdin);
-    getchar();
-    limpiarConsola();
+    presioneEnter();
     return 0;
 }
