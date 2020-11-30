@@ -55,5 +55,6 @@ int main()
     printf("Presione cualquier tecla para continuar...\n");
     fflush(stdin);
     getchar();
+    limpiarConsola();
     return 0;
 }
