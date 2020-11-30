@@ -1,18 +1,54 @@
-//Probando limpiar la pantalla 
+/*
+ASIGNATURA: MÉTODOS DE PROGRAMACIÓN
+SECCIÓN DE LABORATORIO: 0-L-7
+SECCION DE CÁTEDRA: A-1
+PROFESOR DE LABORATORIO: LUIS CELEDON
+PROFESOR DE CÁTEDRA: ALEJANDRO CISTERNA
+
+AUTOR:
+-JOVANNI SCHNEIDER
+-20.278.543-3
+-INGENIERÍA CIVIL EN INFORMATICA
+
+VERSIÓN DEL CODIGO: 1.0
+*/
+
+
+//-------------Importación de librerias-------------
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h> 
+#include <string.h>
+
+
+//-------------Declaración de funciones--------------
+int detectarSO();
+void limpiarConsola();
+int verificarArchivo();
+
+//-------------Definición de funciones declaradas------------
+
+//Entrada: No recibe
+//Salida: Un entero, 0 para windows, 1 Para Linux o MAC
+//Función: Detecta el sistema operativo en el que se está trabajando
+
+int detectarSO(){
+    #if defined(_WIN32)
+    #define SISTEMA 0
+    #else
+    #define SISTEMA 1
+    #endif
+    return SISTEMA;
+}
+
+//------------------------------------------------------
+
 //Entrada: No recibe
 //Salida: No retorna
 //Función: Detecta el sistema operativo en uso y limpia la consola
 void limpiarConsola(){
-    #if defined(_WIN32)
-    #define LIMPIAR 0
-    #else
-    #define LIMPIAR 1
-    #endif
-    switch (LIMPIAR)
+    int sistema = detectarSO();
+    switch (sistema)
     {
     case 0:
         system("cls");
@@ -22,6 +58,8 @@ void limpiarConsola(){
         break;
     }
 }
+
+//--------------------------------------------------------
 
 //Entrada: El nombre del archivo de prueba
 //Salida: Un 1 si el archivo de prueba existe en la carpeta de ejecución del codigo y 0 en caso contrario
@@ -40,6 +78,8 @@ int verificarArchivo(char* nombre){
         return 1;
     }
 }
+
+//--------------Función/Bloque principal-----------------------
 int main()
 { 
     limpiarConsola();
