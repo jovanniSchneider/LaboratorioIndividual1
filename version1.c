@@ -19,12 +19,13 @@ VERSIÓN DEL CODIGO: 1.0
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <uchar.h>
+#include <ctype.h>
 
 //-------------Declaración de funciones--------------
 int detectarSO();
 void limpiarConsola();
 int verificarArchivo();
+int verificarPrimerCaracter();
 
 //-------------Definición de funciones declaradas------------
 
@@ -86,6 +87,24 @@ int verificarArchivo(char* nombre){
     }
 }
 
+//--------------------------------------------------------
+
+//Entrada: Un "string", el cual representa el nombre del archivo de prueba
+//Salida: Un entero, un 1 si el primer caracter del archivo es un numero entero potencia de 2 y un 0 en caso contrario
+//Función: Comprobar que el primer caracter de un archivo es un numero entero potencia de 2
+
+int verificarPrimerCaracter(char * nombre){
+    FILE * archivo;
+    char primerCaracter[4];
+    int cantidadCaracteres = 4;
+    int numeroPrimerCaracter;
+    archivo = fopen(nombre,"r");
+    fgets(primerCaracter,cantidadCaracteres,archivo);
+    printf("%c\n",primerCaracter);
+    fclose(archivo);
+    return 1;
+} 
+
 //--------------Función/Bloque principal-----------------------
 int main()
 { 
@@ -95,5 +114,6 @@ int main()
     gets(nombre);
     int existencia = verificarArchivo(nombre);
     presioneEnter();
+    verificarPrimerCaracter(nombre);
     return 0;
 }
