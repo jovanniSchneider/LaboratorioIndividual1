@@ -138,7 +138,24 @@ int main()
     char nombre[100];
     printf("Escriba el nombre del archivo de prueba: ");
     gets(nombre);
-    int existencia = verificarArchivo(nombre);
-    existencia==1?(verificarPrimeraLinea(nombre,4) == 1?printf("El documento cumple con los requisitos\n"):printf("El documento no cumple con los requisitos\n")):printf("El archivo no existe\n");
+    int cumple = verificarArchivo(nombre);
+    if (cumple == 0)
+    {
+        printf("El documento no existe o no cumple con los requisitos\n");
+    }else
+    {
+        printf("El documento cumple con los requisitos\n");
+        char prueba1[100];
+        char prueba2[100];
+        FILE * archivo;
+        archivo = fopen(nombre,"r");
+        fscanf(archivo,"%s",prueba1);
+        fscanf(archivo,"%s",prueba2);
+        printf("%s\n",prueba1);
+        printf("%s\n",prueba2);
+    }
+    
+    
+
     return 0;
 }
