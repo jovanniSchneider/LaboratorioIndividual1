@@ -27,6 +27,7 @@ void limpiarConsola();
 int verificarArchivo();
 int verificarPrimeraLinea();
 int verificarPotenciaDos();
+char** leerLineas();
 
 //-------------Definición de funciones declaradas------------
 
@@ -89,14 +90,15 @@ int verificarArchivo(char* nombre){
 //--------------------------------------------------------
 
 //Entrada: Un "string", el cual representa el nombre del archivo de prueba
-//Salida: Un entero, un 1 si el primer caracter del archivo es un numero entero y si es potencia de 2 y un 0 en caso contrario
-//Función: Comprobar que el primer caracter de un archivo es un numero entero potencia de 2
+//Salida: Un entero, la primera linea del archivo si esta es un numero entero y si es potencia de 2 y un 0 en caso contrario
+//Función: Comprobar que la primera linea de un archivo es un numero entero potencia de 2
 
 int verificarPrimeraLinea(char * nombre,int cantidadCaracteres){
     FILE * archivo;
     char primeraLinea[cantidadCaracteres];
     archivo = fopen(nombre,"r");
     fscanf(archivo,"%s",&primeraLinea);
+    fclose(archivo);
     int verificador = 1;
     for(int i = 0; i<cantidadCaracteres;i++){
         if (isdigit(primeraLinea[0]) == 0)
@@ -107,18 +109,26 @@ int verificarPrimeraLinea(char * nombre,int cantidadCaracteres){
         if(numero < 2){
             return 0;
         }else
-            return verificarPotenciaDos(numero);
+            switch (verificarPotenciaDos(numero))
+            {
+            case 1:
+                return numero;
+                break;
+            
+            default:
+                return 0;
+                break;
+            }
     }else
         return 0;
-    fclose(archivo);
-    return 1;
+    
 } 
 
 //--------------------------------------------------------
 
-//Entrada: Un "string", el cual representa el nombre del archivo de prueba
-//Salida: Un entero, un 1 si el primer caracter del archivo es un numero entero y si es potencia de 2 y un 0 en caso contrario
-//Función: Comprobar que el primer caracter de un archivo es un numero entero potencia de 2
+//Entrada: Un numero
+//Salida: Un entero, un 1 si es potencia de 2 y un 0 en caso contrario
+//Función: Comprobar si un numero entero potencia de 2
 
 int verificarPotenciaDos(int numero){
     if (numero == 1){
@@ -130,6 +140,15 @@ int verificarPotenciaDos(int numero){
             return 0;
     }
 }
+
+//----------------------------------------------------------
+
+//Entrada: Un numero que representa el ancho y largo de un archivo y un puntero a archivo
+//Salida: Un array de "strings", la cual tiene como elementos las lineas del archivo
+//Función: Guarda
+
+
+
 
 //--------------Función/Bloque principal-----------------------
 int main()
@@ -153,9 +172,7 @@ int main()
         fscanf(archivo,"%s",prueba2);
         printf("%s\n",prueba1);
         printf("%s\n",prueba2);
+        fclose(archivo);
     }
-    
-    
-
     return 0;
 }
