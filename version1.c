@@ -25,7 +25,8 @@ VERSIÓN DEL CODIGO: 1.0
 int detectarSO();
 void limpiarConsola();
 int verificarArchivo();
-int verificarPrimerCaracter();
+int verificarPrimeraLinea();
+int verificarPotenciaDos();
 
 //-------------Definición de funciones declaradas------------
 
@@ -77,12 +78,10 @@ int verificarArchivo(char* nombre){
     FILE * archivo;
     archivo = fopen(nombre,"r");
     if (archivo == NULL){
-        printf("\n\nEl archivo no existe\n");
         return 0;
     }else
     {
         fclose(archivo);
-        printf("\n\nEl archivo existe\n\n");
         return 1;
     }
 }
@@ -90,20 +89,47 @@ int verificarArchivo(char* nombre){
 //--------------------------------------------------------
 
 //Entrada: Un "string", el cual representa el nombre del archivo de prueba
-//Salida: Un entero, un 1 si el primer caracter del archivo es un numero entero potencia de 2 y un 0 en caso contrario
+//Salida: Un entero, un 1 si el primer caracter del archivo es un numero entero y si es potencia de 2 y un 0 en caso contrario
 //Función: Comprobar que el primer caracter de un archivo es un numero entero potencia de 2
 
-int verificarPrimerCaracter(char * nombre){
+int verificarPrimeraLinea(char * nombre,int cantidadCaracteres){
     FILE * archivo;
-    char primerCaracter[4];
-    int cantidadCaracteres = 4;
-    int numeroPrimerCaracter;
+    char primeraLinea[cantidadCaracteres];
     archivo = fopen(nombre,"r");
-    fgets(primerCaracter,cantidadCaracteres,archivo);
-    printf("%c\n",primerCaracter);
+    fscanf(archivo,"%s",&primeraLinea);
+    int verificador = 1;
+    for(int i = 0; i<cantidadCaracteres;i++){
+        if (isdigit(primeraLinea[0]) == 0)
+            verificador = 0;
+    }
+    if(verificador == 1){
+        int numero = atoi(primeraLinea);
+        if(numero < 2){
+            return 0;
+        }else
+            return verificarPotenciaDos(numero);
+    }else
+        return 0;
     fclose(archivo);
     return 1;
 } 
+
+//--------------------------------------------------------
+
+//Entrada: Un "string", el cual representa el nombre del archivo de prueba
+//Salida: Un entero, un 1 si el primer caracter del archivo es un numero entero y si es potencia de 2 y un 0 en caso contrario
+//Función: Comprobar que el primer caracter de un archivo es un numero entero potencia de 2
+
+int verificarPotenciaDos(int numero){
+    if (numero == 1){
+        return 1;
+    }else{
+        if(numero%2 == 0){
+            verificarPotenciaDos(numero/2);
+        }else
+            return 0;
+    }
+}
 
 //--------------Función/Bloque principal-----------------------
 int main()
@@ -113,7 +139,6 @@ int main()
     printf("Escriba el nombre del archivo de prueba: ");
     gets(nombre);
     int existencia = verificarArchivo(nombre);
-    presioneEnter();
-    verificarPrimerCaracter(nombre);
+    existencia==1?(verificarPrimeraLinea(nombre,4) == 1?printf("El documento cumple con los requisitos\n"):printf("El documento no cumple con los requisitos\n")):printf("El archivo no existe\n");
     return 0;
 }
