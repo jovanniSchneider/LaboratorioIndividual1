@@ -28,6 +28,9 @@ int verificarArchivo();
 int verificarPrimeraLinea();
 int verificarPotenciaDos();
 void leerLineas();
+int verificarMatriz();
+int verificarCaracteres();
+int verificarIgualdad();
 
 //-------------Definición de funciones declaradas------------
 
@@ -147,17 +150,101 @@ int verificarPotenciaDos(int numero){
 //Salida: Un array de "strings", la cual tiene como elementos las lineas del archivo
 //Función: Guarda las lineas de un archivo de texto en un array
 
-void leerLineas(FILE * archivo,int ancho,char matriz[ancho][ancho+2]){
-    char residuo[ancho + 2];
-    //fscanf(archivo,"%s",primeraLinea);
-    fgets(residuo,ancho + 2,archivo);
-    printf("Aqui voy\n");
-    for (int i = 0; i < ancho;i++){
-        fgets(matriz[i],ancho+2,archivo);
-        fgets(residuo,ancho+2,archivo);
+void leerLineas(FILE * archivo,int ancho,char matriz[ancho][ancho]){
+    char residuo[ancho];
+    fgets(residuo,ancho,archivo);
+    for (int i = 0; i <= ancho;i++){
+        fgets(matriz[i],ancho,archivo);
+        fgets(residuo,ancho,archivo);
     }
 }
 
+//----------------------------------------------------------
+
+//Entrada:
+//Salida:
+//Función:
+
+int verificarMatriz(int tamano, char matriz[tamano][tamano]){
+    int verificacion = 0;
+    for (int i = 0; i < tamano-1;i++){
+        char * array = (char *)malloc(sizeof(char)*tamano);
+        for (int j = 0; j < tamano;j++){
+            array[j] = matriz[i][j];
+        }
+        printf("Linea %d\n",i+1);
+        if (i < 3)
+        {
+        printf("matriz base: %s\n",matriz[i]);
+        printf("matriz copy: %s\n",array);
+        }
+        verificacion += verificarCaracteres(tamano-1,array);
+        free(array);
+    }
+    if (verificacion == tamano-1){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+//----------------------------------------------------------
+
+//Entrada: Un "string", que representa una de las lineas de la matriz principal
+//Salida: Un entero, un 1 en caso de ser verdadero y un 0 en caso de ser falso
+//Funcion: Verifica si en un "string" hay solo X y _, si encuentra otro caracter es falso
+
+int verificarCaracteres(int tamano,char array[tamano]){
+    if (tamano < 2){
+        printf("Tamaño en la recursión: %d\n",tamano);
+        printf("Array al entrar en la recursion: %s\n",array);
+    }
+    if (tamano == 1){
+        return verificarIgualdad(array);
+    }else{
+        int sizeIzquierda = tamano/2;
+        int sizeDerecha = tamano - sizeIzquierda;
+        char * strIzquierda = (char *)malloc(sizeof(char)*sizeIzquierda);
+        char * strDerecha = (char *)malloc(sizeof(char)*sizeDerecha);
+        for (int i = 0;i<sizeIzquierda;i++){
+            strIzquierda[i]=array[i];
+        }
+        for (int i = 0;i<sizeDerecha;i++){
+            strDerecha[i]=array[i+sizeIzquierda];
+        }
+        if (tamano > 4){
+        printf("Tamaño izquierda: %d\n",sizeIzquierda);
+        printf("Array izquierda: %s\n",strIzquierda);
+        printf("Tamaño derecha: %d\n",sizeDerecha);
+        printf("Array derecha: %s\n",strDerecha);
+        }
+        if (verificarCaracteres(sizeIzquierda,strIzquierda) == 1 && verificarCaracteres(sizeDerecha,strDerecha) == 1){
+            printf("Verdadero\n");
+            return 1;
+        }    
+        else{
+            printf("Falso\n");
+            return 0;
+        }
+    }
+}
+
+//----------------------------------------------------------
+
+//Entrada:Un array de un caracter que representa un caracter del array de la función verificarCaracteres
+//Salida: Un entero, un 1 en caso de ser verdadero y un 0 en caso de ser falso
+//Funcion: Verifica que el caracter del array sea igual a X o a _, si no es ninguno es falso
+
+int verificarIgualdad(char array[1]){
+    if (strcmp(array,"X") == 0 || strcmp(array,"_") == 0 )
+    {
+        return 1;
+    }else{
+        return 0;
+    }
+    
+    
+}
 
 //--------------Función/Bloque principal-----------------------
 int main()
@@ -175,18 +262,27 @@ int main()
         int numero = verificarPrimeraLinea(nombre,4);
         if (numero == 0)
         {
-            printf("El archivo no cumple con los requisitos");
+            printf("El archivo no cumple con los requisitos\n");
         }else
         {
             printf("El documento cumple con los requisitos\n");
-            char matriz[numero+1][numero+2];
+            char matriz[numero+1][numero+1];
             FILE * archivo;
             archivo = fopen(nombre,"r");
-            leerLineas(archivo,numero,matriz);
-            fclose(archivo);   
+            leerLineas(archivo,numero+1,matriz);
+            fclose(archivo);
+
             for (int i = 0; i < numero;i++){
                 printf("%s\n",matriz[i]);
             }
+            if (verificarMatriz(numero+1,matriz) == 0){
+                printf("El archivo no cumple con los requisitos\n");
+                return 0;
+            }else
+            {
+                printf("El archivo cumple con los requisitos\n");
+            }
+            
         }
     }
     return 0;
