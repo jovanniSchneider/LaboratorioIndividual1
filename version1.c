@@ -27,7 +27,7 @@ void limpiarConsola();
 int verificarArchivo();
 int verificarPrimeraLinea();
 int verificarPotenciaDos();
-char** leerLineas();
+void leerLineas();
 
 //-------------Definición de funciones declaradas------------
 
@@ -89,7 +89,7 @@ int verificarArchivo(char* nombre){
 
 //--------------------------------------------------------
 
-//Entrada: Un "string", el cual representa el nombre del archivo de prueba
+//Entrada: Un "string", el cual representa el nombre del archivo de prueba y la cantidad de caracteres a leer
 //Salida: Un entero, la primera linea del archivo si esta es un numero entero y si es potencia de 2 y un 0 en caso contrario
 //Función: Comprobar que la primera linea de un archivo es un numero entero potencia de 2
 
@@ -145,9 +145,18 @@ int verificarPotenciaDos(int numero){
 
 //Entrada: Un numero que representa el ancho y largo de un archivo y un puntero a archivo
 //Salida: Un array de "strings", la cual tiene como elementos las lineas del archivo
-//Función: Guarda
+//Función: Guarda las lineas de un archivo de texto en un array
 
-
+void leerLineas(FILE * archivo,int ancho,char matriz[ancho][ancho+2]){
+    char residuo[ancho + 2];
+    //fscanf(archivo,"%s",primeraLinea);
+    fgets(residuo,ancho + 2,archivo);
+    printf("Aqui voy\n");
+    for (int i = 0; i < ancho;i++){
+        fgets(matriz[i],ancho+2,archivo);
+        fgets(residuo,ancho+2,archivo);
+    }
+}
 
 
 //--------------Función/Bloque principal-----------------------
@@ -157,22 +166,28 @@ int main()
     char nombre[100];
     printf("Escriba el nombre del archivo de prueba: ");
     gets(nombre);
-    int cumple = verificarArchivo(nombre);
-    if (cumple == 0)
+    int existencia = verificarArchivo(nombre);
+    if (existencia == 0)
     {
-        printf("El documento no existe o no cumple con los requisitos\n");
+        printf("El documento no existe\n");
     }else
     {
-        printf("El documento cumple con los requisitos\n");
-        char prueba1[100];
-        char prueba2[100];
-        FILE * archivo;
-        archivo = fopen(nombre,"r");
-        fscanf(archivo,"%s",prueba1);
-        fscanf(archivo,"%s",prueba2);
-        printf("%s\n",prueba1);
-        printf("%s\n",prueba2);
-        fclose(archivo);
+        int numero = verificarPrimeraLinea(nombre,4);
+        if (numero == 0)
+        {
+            printf("El archivo no cumple con los requisitos");
+        }else
+        {
+            printf("El documento cumple con los requisitos\n");
+            char matriz[numero+1][numero+2];
+            FILE * archivo;
+            archivo = fopen(nombre,"r");
+            leerLineas(archivo,numero,matriz);
+            fclose(archivo);   
+            for (int i = 0; i < numero;i++){
+                printf("%s\n",matriz[i]);
+            }
+        }
     }
     return 0;
 }
