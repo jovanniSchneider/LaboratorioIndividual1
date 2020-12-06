@@ -151,11 +151,12 @@ int verificarPotenciaDos(int numero){
 //Función: Guarda las lineas de un archivo de texto en un array
 
 void leerLineas(FILE * archivo,int ancho,char matriz[ancho][ancho]){
+    char temporal[ancho];
     char residuo[ancho];
-    fgets(residuo,ancho,archivo);
     for (int i = 0; i <= ancho;i++){
-        fgets(matriz[i],ancho,archivo);
         fgets(residuo,ancho,archivo);
+        fgets(temporal,ancho,archivo); 
+        strcpy(matriz[i],temporal);
     }
 }
 
@@ -173,12 +174,7 @@ int verificarMatriz(int tamano, char matriz[tamano][tamano]){
             array[j] = matriz[i][j];
         }
         printf("Linea %d\n",i+1);
-        if (i < 3)
-        {
-        printf("matriz base: %s\n",matriz[i]);
-        printf("matriz copy: %s\n",array);
-        }
-        verificacion += verificarCaracteres(tamano-1,array);
+        verificacion += verificarCaracteres(tamano-1,array,tamano-1);
         free(array);
     }
     if (verificacion == tamano-1){
@@ -194,36 +190,39 @@ int verificarMatriz(int tamano, char matriz[tamano][tamano]){
 //Salida: Un entero, un 1 en caso de ser verdadero y un 0 en caso de ser falso
 //Funcion: Verifica si en un "string" hay solo X y _, si encuentra otro caracter es falso
 
-int verificarCaracteres(int tamano,char array[tamano]){
-    if (tamano < 2){
-        printf("Tamaño en la recursión: %d\n",tamano);
-        printf("Array al entrar en la recursion: %s\n",array);
+int verificarCaracteres(int tamano,char * array,int tamanoInicial){
+    char * arrayAux;
+    if (strlen(array) > tamano){
+        char * arrayAux = (char *)calloc(tamano,sizeof(char));
+        for(int i = 0;i<tamano;i++){
+            arrayAux[i]=array[i];
+        }
+        array = arrayAux;
     }
     if (tamano == 1){
         return verificarIgualdad(array);
     }else{
         int sizeIzquierda = tamano/2;
         int sizeDerecha = tamano - sizeIzquierda;
-        char * strIzquierda = (char *)malloc(sizeof(char)*sizeIzquierda);
-        char * strDerecha = (char *)malloc(sizeof(char)*sizeDerecha);
-        for (int i = 0;i<sizeIzquierda;i++){
+        char * strIzquierda = (char *)malloc(sizeof(char)*(sizeIzquierda));
+        char * strDerecha = (char *)malloc(sizeof(char)*(sizeDerecha));
+        for (int i = 0;i < sizeIzquierda;i++){
             strIzquierda[i]=array[i];
         }
         for (int i = 0;i<sizeDerecha;i++){
             strDerecha[i]=array[i+sizeIzquierda];
         }
-        if (tamano > 4){
-        printf("Tamaño izquierda: %d\n",sizeIzquierda);
-        printf("Array izquierda: %s\n",strIzquierda);
-        printf("Tamaño derecha: %d\n",sizeDerecha);
-        printf("Array derecha: %s\n",strDerecha);
+        if (tamanoInicial != tamano){
+            free(array);
         }
-        if (verificarCaracteres(sizeIzquierda,strIzquierda) == 1 && verificarCaracteres(sizeDerecha,strDerecha) == 1){
-            printf("Verdadero\n");
+        if (verificarCaracteres(sizeIzquierda,strIzquierda,tamanoInicial) == 1 && verificarCaracteres(sizeDerecha,strDerecha,tamanoInicial) == 1){
+            //free(array);
+            //printf("Verdadero\n");
             return 1;
         }    
         else{
-            printf("Falso\n");
+            //free(array);
+            //printf("Falso\n");
             return 0;
         }
     }
@@ -282,7 +281,6 @@ int main()
             {
                 printf("El archivo cumple con los requisitos\n");
             }
-            
         }
     }
     return 0;
