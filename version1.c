@@ -173,7 +173,7 @@ int verificarMatriz(int tamano, char matriz[tamano][tamano]){
         for (int j = 0; j < tamano;j++){
             array[j] = matriz[i][j];
         }
-        printf("Linea %d\n",i+1);
+        //printf("Linea %d\n",i+1);
         verificacion += verificarCaracteres(tamano-1,array,tamano-1);
         free(array);
     }
@@ -264,7 +264,7 @@ int main()
             printf("El archivo no cumple con los requisitos\n");
         }else
         {
-            printf("El documento cumple con los requisitos\n");
+            printf("Archivo: %s\n",nombre);
             char matriz[numero+1][numero+1];
             FILE * archivo;
             archivo = fopen(nombre,"r");
