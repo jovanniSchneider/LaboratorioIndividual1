@@ -260,7 +260,7 @@ void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamano
         printf("%s\n",matriz[i]);
     }
     if (tamanoVertical == 2 && ciclo != 1){
-        divisionHorizontal(2,matriz,medio,archivo);
+        divisionHorizontal(2,tamanoHorizontal,matriz,medio,archivo,1);
     }
     else{
         int sizeArriba;
@@ -295,9 +295,9 @@ void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamano
             printf("%s\n",matrizArriba[i]);
         }
         if (sizeArriba == 2){
-            divisionHorizontal(2,tamanoHorizontal,matrizArriba,inicio,archivo);
+            divisionHorizontal(2,tamanoHorizontal,matrizArriba,inicio,archivo,1);
         }else
-            divisionHorizontal(3,tamanoHorizontal,matrizArriba,medio,archivo);
+            divisionHorizontal(3,tamanoHorizontal,matrizArriba,medio,archivo,1);
         divisionVertical(sizeAbajo,tamanoHorizontal,matrizAbajo,ciclo+1,archivo);
     }
     
