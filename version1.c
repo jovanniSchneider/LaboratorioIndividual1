@@ -255,10 +255,6 @@ int verificarIgualdad(char array[1]){
 void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamanoVertical][tamanoHorizontal+1], int ciclo,FILE * archivo){
     int inicio = 0;
     int medio = 1;
-    for (int i = 0;i < tamanoVertical;i++){
-        printf("Linea %d\n",i+1);
-        printf("%s\n",matriz[i]);
-    }
     if (tamanoVertical == 2 && ciclo != 1){
         divisionHorizontal(2,tamanoHorizontal,matriz,medio,archivo,1);
     }
@@ -271,6 +267,7 @@ void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamano
             sizeArriba = 3;
         sizeAbajo = tamanoVertical-sizeArriba+2;
         printf("size abajo : %d\n",sizeAbajo);
+        printf("size arriba: %d\n",sizeArriba);
         char ** matrizArriba = (char **)calloc(sizeArriba,sizeof(char*));
         for (int i = 0; i < sizeArriba;i++){
             matrizArriba[i] = (char *)calloc(tamanoHorizontal,sizeof(char));
@@ -280,21 +277,21 @@ void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamano
             matrizAbajo[i] = (char *)calloc(tamanoHorizontal,sizeof(char));
         }
         for (int i = 0;i < sizeArriba;i++){
-            for(int j = 0;j < tamanoHorizontal;j++){
-                matrizArriba[i][j] = matriz[i][j];
-            }
-            printf("%s\n",matriz[i]);
+            strcpy(matrizArriba[i],matriz[i]);
             printf("%s\n",matrizArriba[i]);
         }
         printf("\nMatriz abajo\n\n");
         for (int i = 0;i < sizeAbajo;i++){
-            for(int j = 0;j < tamanoHorizontal;j++){
-                matrizAbajo[i][j] = matriz[i+sizeArriba-2][j];
-            }
-            printf("%s\n",matriz[i]);
-            printf("%s\n",matrizArriba[i]);
+            strcpy(matrizAbajo[i],matriz[i+sizeArriba-2]);
+            printf("%s\n",matrizAbajo[i]);
         }
         if (sizeArriba == 2){
+            printf("Matriz arriba\n");
+            for(int i = 0; i < sizeArriba; i++)
+            {
+                printf("%s\n",matrizArriba[i]);
+            }
+            
             divisionHorizontal(2,tamanoHorizontal,matrizArriba,inicio,archivo,1);
         }else
             divisionHorizontal(3,tamanoHorizontal,matrizArriba,medio,archivo,1);
@@ -308,7 +305,12 @@ void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamano
 //Salida:
 //Función:
 
-void divisionHorizontal(int tamanoVertical,int tamanoHorizontal,char matriz[tamanoVertical][tamanoHorizontal],int filaAnalisis,FILE * archivo,int ciclo){
+void divisionHorizontal(int tamanoVertical,int tamanoHorizontal,char** matriz,int filaAnalisis,FILE * archivo,int ciclo){
+    printf("--------------División horizontal-------------\n");
+    for (int i = 0; i < tamanoVertical; i++)
+    {
+        printf("%s\n",matriz[i]);
+    }
     int inicio = 0;
     int medio = 1;
     
@@ -356,7 +358,7 @@ void divisionHorizontal(int tamanoVertical,int tamanoHorizontal,char matriz[tama
 //Salida:
 //Función:
 
-void calcularEstado(int tamanoVertical,int tamanoHorizontal,char matriz[tamanoVertical][tamanoHorizontal],int fila, int columna,FILE * archivo){
+void calcularEstado(int tamanoVertical,int tamanoHorizontal,char ** matriz,int fila, int columna,FILE * archivo){
     int vecinasVivas = 0;
     int estado; //1 para viva, 0 para muerta
     printf("Tamaño vertical: %d\n",tamanoVertical);
@@ -364,17 +366,18 @@ void calcularEstado(int tamanoVertical,int tamanoHorizontal,char matriz[tamanoVe
     for (int i = 0;i<tamanoVertical;i++){
         printf("Aqui voy\n");
         for (int j = 0; j < tamanoHorizontal; j++){
-            printf("Matriz i j : %s\n",matriz[i]);
+            printf("Matriz i j : %c\n",matriz[i][j]);
             if (i != fila && j != columna){
                 printf("Aqui voy\n");
                 
-                if(matriz[i][j] == "X"){
+                if(matriz[i][j] == 'X'){
+                    printf("Aqui voy jejeje\n");
                     vecinasVivas++;
                 }
             }
         }
     }
-    if(strcmp(matriz[fila][columna],"X")){
+    if(matriz[fila][columna] == 'X'){
         if(vecinasVivas < 2)
             estado = 0;
         else if(vecinasVivas > 3){
@@ -427,10 +430,10 @@ int main()
                 return 0;
             }else
             {
-                for (int i = 0;i < numero;i++){
+                /*for (int i = 0;i < numero;i++){
                     printf("Linea %d\n",i+1);
                     printf("%s\n",matriz[i]);
-                }
+                }*/
                 printf("El archivo cumple con los requisitos\n");
                 FILE * archivoSalida;
                 archivoSalida = fopen("PruebaGeneracion.in","w");
