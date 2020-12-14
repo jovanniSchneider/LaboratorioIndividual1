@@ -20,6 +20,13 @@ VERSIÓN DEL CODIGO: 1.0
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+
+//-------------Definicion de estructuras------------
+
 
 //-------------Declaración de funciones--------------
 int detectarSO();
@@ -253,10 +260,23 @@ int verificarIgualdad(char array[1]){
 //Función:
 
 void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamanoVertical][tamanoHorizontal+1], int ciclo,FILE * archivo){
+    printf("Matriz: \n");
+    printf("Tamaño vertical = %d\n",tamanoVertical);
+    for (int i = 0; i < tamanoVertical; i++)
+    {
+        printf("%s\n",matriz[i]);
+    }
     int inicio = 0;
     int medio = 1;
     if (tamanoVertical == 2 && ciclo != 1){
-        divisionHorizontal(2,tamanoHorizontal,matriz,medio,archivo,1);
+        printf("Falta la ultima linea\n");
+        char ** newMatriz = (char **)malloc(sizeof(char*)*2);
+        for (int i = 0; i < 2; i++)
+        {
+            newMatriz[i] = (char *)malloc(sizeof(char)*tamanoHorizontal);
+            strcpy(newMatriz[i],matriz[i]);
+        }
+        divisionHorizontal(2,tamanoHorizontal,newMatriz,medio,archivo,1);
     }
     else{
         int sizeArriba;
@@ -268,19 +288,20 @@ void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamano
         sizeAbajo = tamanoVertical-sizeArriba+2;
         printf("size abajo : %d\n",sizeAbajo);
         printf("size arriba: %d\n",sizeArriba);
-        char ** matrizArriba = (char **)calloc(sizeArriba,sizeof(char*));
+        char ** matrizArriba = (char **)malloc(sizeof(char*)*sizeArriba);
         for (int i = 0; i < sizeArriba;i++){
-            matrizArriba[i] = (char *)calloc(tamanoHorizontal,sizeof(char));
+            matrizArriba[i] = (char *)malloc(sizeof(char)*tamanoHorizontal+1);
         }
-        char ** matrizAbajo = (char **)calloc(sizeAbajo,sizeof(char*));
-        for (int i = 0; i < sizeAbajo;i++){
-            matrizAbajo[i] = (char *)calloc(tamanoHorizontal,sizeof(char));
-        }
+        char matrizAbajo[sizeAbajo][tamanoHorizontal+1];
         for (int i = 0;i < sizeArriba;i++){
             strcpy(matrizArriba[i],matriz[i]);
         }
         for (int i = 0;i < sizeAbajo;i++){
-            strcpy(matrizAbajo[i],matriz[i+sizeArriba-2]);
+            for (int j = 0; j <= tamanoHorizontal; j++)
+            {
+                matrizAbajo[i][j] = matriz[sizeArriba+i-2][j];
+            }
+            printf("%s\n",matrizAbajo[i]);
         }
         if (sizeArriba == 2){
             divisionHorizontal(2,tamanoHorizontal,matrizArriba,inicio,archivo,1);
@@ -299,7 +320,6 @@ void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamano
 void divisionHorizontal(int tamanoVertical,int tamanoHorizontal,char** matriz,int filaAnalisis,FILE * archivo,int ciclo){
     int inicio = 0;
     int medio = 1;
-    
     if (tamanoHorizontal == 2 && ciclo != 1){
         calcularEstado(tamanoVertical,tamanoHorizontal,matriz,filaAnalisis,medio,archivo);
         fputc('\n',archivo);
@@ -321,7 +341,6 @@ void divisionHorizontal(int tamanoVertical,int tamanoHorizontal,char** matriz,in
         for(int i = 0; i < tamanoVertical;i++){
             matrizDerecha[i] = (char*)calloc(sizeDerecha,sizeof(char));
         }
-        
         for (int i = 0;i < tamanoVertical;i++){
             for(int j = 0;j < sizeIzquierda;j++){
                 matrizIzquierda[i][j] = matriz[i][j];
@@ -351,8 +370,8 @@ void calcularEstado(int tamanoVertical,int tamanoHorizontal,char ** matriz,int f
     printf("Tamaño horizontal: %d\n",tamanoHorizontal);
     for (int i = 0;i<tamanoVertical;i++){
         for (int j = 0; j < tamanoHorizontal; j++){
-            printf("Matriz i j : %c\n",matriz[i][j]);
-            if (i != fila && j != columna){
+
+            if (!(i == fila && j == columna)){
                 if(matriz[i][j] == 'X'){
                     vecinasVivas++;
                 }
@@ -364,10 +383,13 @@ void calcularEstado(int tamanoVertical,int tamanoHorizontal,char ** matriz,int f
             estado = 0;
         else if(vecinasVivas > 3){
             estado = 0;
-        }else
+        }else if (vecinasVivas == 3 || vecinasVivas ==2)
+        {
             estado = 1;
+        }
+        
     }else{
-        if(vecinasVivas >= 3){
+        if(vecinasVivas == 3){
             estado = 1;
         }else
             estado = 0;
@@ -416,11 +438,20 @@ int main()
             {
                 printf("El archivo cumple con los requisitos\n");
                 FILE * archivoSalida;
-                archivoSalida = fopen("PruebaGeneracion.in","w");
+                struct stat st = {0};
+                if (stat("generaciones",&st) == -1){
+                    mkdir("generaciones",0700);
+                }
+                archivoSalida = fopen("generaciones/PruebaGeneracion.in","w");
+                char numeroChar[3];
+                //unsigned int numeroSinSigno = (unsigned int)numero;
+                sprintf(numeroChar,"%u",numero);
+                printf("%s\n",numeroChar);
+                fputs(numeroChar,archivoSalida);
+                fputc('\n',archivoSalida);
                 divisionVertical(numero,numero,matriz,1,archivoSalida);
                 fclose(archivoSalida);
             }
-
         }
     }
     return 0;
