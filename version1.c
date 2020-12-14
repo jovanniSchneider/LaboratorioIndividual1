@@ -410,7 +410,11 @@ void calcularEstado(int tamanoVertical,int tamanoHorizontal,char ** matriz,int f
 void pasoDeGeneraciones(char * nombreArchivoOriginal ,int generacionActual,int generaciones,char ** matriz,int sizeV,int sizeH,int verEstado){
     struct stat st = {0};
     if (stat(nombreArchivoOriginal,&st) == -1){
+        #if defined(_WIN32)
+        mkdir(nombreArchivoOriginal);
+        #else
         mkdir(nombreArchivoOriginal,0700);
+        #endif
     }
     if (verEstado == 1)
     {
