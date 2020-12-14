@@ -297,11 +297,7 @@ void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamano
             strcpy(matrizArriba[i],matriz[i]);
         }
         for (int i = 0;i < sizeAbajo;i++){
-            for (int j = 0; j <= tamanoHorizontal; j++)
-            {
-                matrizAbajo[i][j] = matriz[sizeArriba+i-2][j];
-            }
-            printf("%s\n",matrizAbajo[i]);
+            strcpy(matrizAbajo[i],matriz[sizeArriba+i-2]);
         }
         if (sizeArriba == 2){
             divisionHorizontal(2,tamanoHorizontal,matrizArriba,inicio,archivo,1);
