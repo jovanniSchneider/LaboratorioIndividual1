@@ -41,6 +41,7 @@ int verificarIgualdad();
 void divisionVertical();
 void divisionHorizontal();
 void calcularEstado();
+void pasoDeGeneraciones();
 
 //-------------Definición de funciones declaradas------------
 
@@ -259,24 +260,17 @@ int verificarIgualdad(char array[1]){
 //Salida:
 //Función:
 
-void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamanoVertical][tamanoHorizontal+1], int ciclo,FILE * archivo){
-    printf("Matriz: \n");
-    printf("Tamaño vertical = %d\n",tamanoVertical);
-    for (int i = 0; i < tamanoVertical; i++)
-    {
-        printf("%s\n",matriz[i]);
-    }
+void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamanoVertical][tamanoHorizontal+1], int ciclo,FILE * archivo,int verEstado){
     int inicio = 0;
     int medio = 1;
     if (tamanoVertical == 2 && ciclo != 1){
-        printf("Falta la ultima linea\n");
         char ** newMatriz = (char **)malloc(sizeof(char*)*2);
         for (int i = 0; i < 2; i++)
         {
             newMatriz[i] = (char *)malloc(sizeof(char)*tamanoHorizontal);
             strcpy(newMatriz[i],matriz[i]);
         }
-        divisionHorizontal(2,tamanoHorizontal,newMatriz,medio,archivo,1);
+        divisionHorizontal(2,tamanoHorizontal,newMatriz,medio,archivo,1,verEstado);
     }
     else{
         int sizeArriba;
@@ -286,8 +280,6 @@ void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamano
         }else
             sizeArriba = 3;
         sizeAbajo = tamanoVertical-sizeArriba+2;
-        printf("size abajo : %d\n",sizeAbajo);
-        printf("size arriba: %d\n",sizeArriba);
         char ** matrizArriba = (char **)malloc(sizeof(char*)*sizeArriba);
         for (int i = 0; i < sizeArriba;i++){
             matrizArriba[i] = (char *)malloc(sizeof(char)*tamanoHorizontal+1);
@@ -300,10 +292,10 @@ void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamano
             strcpy(matrizAbajo[i],matriz[sizeArriba+i-2]);
         }
         if (sizeArriba == 2){
-            divisionHorizontal(2,tamanoHorizontal,matrizArriba,inicio,archivo,1);
+            divisionHorizontal(2,tamanoHorizontal,matrizArriba,inicio,archivo,1,verEstado);
         }else
-            divisionHorizontal(3,tamanoHorizontal,matrizArriba,medio,archivo,1);
-        divisionVertical(sizeAbajo,tamanoHorizontal,matrizAbajo,ciclo+1,archivo);
+            divisionHorizontal(3,tamanoHorizontal,matrizArriba,medio,archivo,1,verEstado);
+        divisionVertical(sizeAbajo,tamanoHorizontal,matrizAbajo,ciclo+1,archivo,verEstado);
     }
     
 }
@@ -313,12 +305,17 @@ void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamano
 //Salida:
 //Función:
 
-void divisionHorizontal(int tamanoVertical,int tamanoHorizontal,char** matriz,int filaAnalisis,FILE * archivo,int ciclo){
+void divisionHorizontal(int tamanoVertical,int tamanoHorizontal,char** matriz,int filaAnalisis,FILE * archivo,int ciclo,int verEstado){
     int inicio = 0;
     int medio = 1;
     if (tamanoHorizontal == 2 && ciclo != 1){
-        calcularEstado(tamanoVertical,tamanoHorizontal,matriz,filaAnalisis,medio,archivo);
+        calcularEstado(tamanoVertical,tamanoHorizontal,matriz,filaAnalisis,medio,archivo,verEstado);
         fputc('\n',archivo);
+        if (verEstado == 1)
+        {
+            printf("\n");
+        }
+        
     }
     else{
         int sizeIzquierda;
@@ -346,10 +343,10 @@ void divisionHorizontal(int tamanoVertical,int tamanoHorizontal,char** matriz,in
             }
         }
         if (sizeIzquierda == 2){
-            calcularEstado(tamanoVertical,2,matrizIzquierda,filaAnalisis,inicio,archivo);
+            calcularEstado(tamanoVertical,2,matrizIzquierda,filaAnalisis,inicio,archivo,verEstado);
         }else
-            calcularEstado(tamanoVertical,3,matrizIzquierda,filaAnalisis,medio,archivo);
-        divisionHorizontal(tamanoVertical,sizeDerecha,matrizDerecha,filaAnalisis,archivo,ciclo+1);
+            calcularEstado(tamanoVertical,3,matrizIzquierda,filaAnalisis,medio,archivo,verEstado);
+        divisionHorizontal(tamanoVertical,sizeDerecha,matrizDerecha,filaAnalisis,archivo,ciclo+1,verEstado);
     }
     
 }
@@ -359,11 +356,9 @@ void divisionHorizontal(int tamanoVertical,int tamanoHorizontal,char** matriz,in
 //Salida:
 //Función:
 
-void calcularEstado(int tamanoVertical,int tamanoHorizontal,char ** matriz,int fila, int columna,FILE * archivo){
+void calcularEstado(int tamanoVertical,int tamanoHorizontal,char ** matriz,int fila, int columna,FILE * archivo,int verEstado){
     int vecinasVivas = 0;
     int estado; //1 para viva, 0 para muerta
-    printf("Tamaño vertical: %d\n",tamanoVertical);
-    printf("Tamaño horizontal: %d\n",tamanoHorizontal);
     for (int i = 0;i<tamanoVertical;i++){
         for (int j = 0; j < tamanoHorizontal; j++){
 
@@ -392,9 +387,64 @@ void calcularEstado(int tamanoVertical,int tamanoHorizontal,char ** matriz,int f
     }
     if(estado == 1){
         fputc('X',archivo);
-    }else
+        if (verEstado == 1)
+        {
+            printf("X");
+        }
+    }else{
         fputc('_',archivo);
-    printf("Vecinas vivas: %d\n",vecinasVivas);
+        if (verEstado == 1)
+        {
+            printf("_");
+        }
+    }
+
+}
+
+//-------------------------------------------------------------
+
+//Entrada:
+//Salida:
+//Función:
+
+void pasoDeGeneraciones(char * nombreArchivoOriginal ,int generacionActual,int generaciones,char ** matriz,int sizeV,int sizeH,int verEstado){
+    struct stat st = {0};
+    if (stat(nombreArchivoOriginal,&st) == -1){
+        mkdir(nombreArchivoOriginal,0700);
+    }
+    if (verEstado == 1)
+    {
+        presioneEnter();
+        limpiarConsola();
+    }
+    char generacion[50]="";
+    strcat(generacion,nombreArchivoOriginal);
+    char salida[12]="/Salida_gen";
+    strcat(generacion,salida);
+    char * extension = ".in";
+    char generacionActualChar[7];
+    char sizeChar[3];
+    sprintf(generacionActualChar,"%u",generacionActual);
+    strcat(generacion,generacionActualChar);
+    strcat(generacion,extension);
+    sprintf(sizeChar,"%u",sizeV);
+    FILE * archivo = fopen(generacion,"w");
+    fputs(sizeChar,archivo);
+    fputc('\n',archivo);
+    divisionVertical(sizeV,sizeH,matriz,1,archivo,verEstado);
+    fclose(archivo);
+    if (generacionActual == generaciones)
+    {
+        printf("Paso de generaciones finalizado\n");
+    }else
+    {
+        FILE * archivo = fopen(generacion,"r");
+        char newMatriz[sizeV][sizeH+1];
+        leerLineas(archivo,sizeV+1,newMatriz);
+        fclose(archivo);
+        pasoDeGeneraciones(nombreArchivoOriginal,generacionActual+1,generaciones,newMatriz,sizeV,sizeH,verEstado);
+    }
+
 }
 
 //--------------Función/Bloque principal-----------------------
@@ -402,8 +452,11 @@ int main()
 { 
     presioneEnter();
     char nombre[100];
-    printf("Escriba el nombre del archivo de prueba: ");
+    char nombreSinExtension[100]="";
+    printf("Escriba el nombre del archivo de prueba sin extension: ");
     gets(nombre);
+    strcat(nombreSinExtension,nombre);
+    strcat(nombre,".in");
     int existencia = verificarArchivo(nombre);
     if (existencia == 0)
     {
@@ -433,20 +486,16 @@ int main()
             }else
             {
                 printf("El archivo cumple con los requisitos\n");
-                FILE * archivoSalida;
-                struct stat st = {0};
-                if (stat("generaciones",&st) == -1){
-                    mkdir("generaciones",0700);
-                }
-                archivoSalida = fopen("generaciones/PruebaGeneracion.in","w");
-                char numeroChar[3];
-                //unsigned int numeroSinSigno = (unsigned int)numero;
-                sprintf(numeroChar,"%u",numero);
-                printf("%s\n",numeroChar);
-                fputs(numeroChar,archivoSalida);
-                fputc('\n',archivoSalida);
-                divisionVertical(numero,numero,matriz,1,archivoSalida);
-                fclose(archivoSalida);
+                int verEstado;
+                int generaciones;
+                printf("¿Cuántas generaciones desea?: ");
+                scanf("%d",&generaciones);
+                printf("¿Desea ver el cambio de estado en pantalla?\nSí (1)\nNo (2)\nIngrese el numero de su opcion aquí: ");
+                scanf("%d",&verEstado);
+                fflush(stdin);
+                presioneEnter();
+                limpiarConsola();
+                pasoDeGeneraciones(nombreSinExtension,1,generaciones,matriz,numero,numero,verEstado);
             }
         }
     }
