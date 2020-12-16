@@ -111,7 +111,7 @@ int verificarPrimeraLinea(char * nombre,int cantidadCaracteres){
     FILE * archivo;
     char primeraLinea[cantidadCaracteres];
     archivo = fopen(nombre,"r");
-    fscanf(archivo,"%s",&primeraLinea);
+    fscanf(archivo,"%s",primeraLinea);
     fclose(archivo);
     int verificador = 1;
     for(int i = 0; i<cantidadCaracteres;i++){
@@ -226,13 +226,9 @@ int verificarCaracteres(int tamano,char * array,int tamanoInicial){
             free(array);
         }
         if (verificarCaracteres(sizeIzquierda,strIzquierda,tamanoInicial) == 1 && verificarCaracteres(sizeDerecha,strDerecha,tamanoInicial) == 1){
-            //free(array);
-            //printf("Verdadero\n");
             return 1;
         }    
         else{
-            //free(array);
-            //printf("Falso\n");
             return 0;
         }
     }
@@ -256,9 +252,9 @@ int verificarIgualdad(char array[1]){
 }
 //----------------------------------------------------------
 
-//Entrada:
-//Salida:
-//Función:
+//Entrada: 4 enteros los cuales representan el tamaño vertical y horizontal de la matriz, el ciclo recursivo, y la desicion de ver el estado por pantalla, una matriz de char de 2 dimensiones y un archivo, que es en el cual se escribirá el nuevo estado
+//Salida: no retorna
+//Función: Genera la división vertical de los datos, para solo trabajar con 2(inicio y final) o 3 filas a la vez
 
 void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamanoVertical][tamanoHorizontal+1], int ciclo,FILE * archivo,int verEstado){
     int inicio = 0;
@@ -271,6 +267,7 @@ void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamano
             strcpy(newMatriz[i],matriz[i]);
         }
         divisionHorizontal(2,tamanoHorizontal,newMatriz,medio,archivo,1,verEstado);
+        free(newMatriz);
     }
     else{
         int sizeArriba;
@@ -293,18 +290,21 @@ void divisionVertical(int tamanoVertical,int tamanoHorizontal,char matriz[tamano
         }
         if (sizeArriba == 2){
             divisionHorizontal(2,tamanoHorizontal,matrizArriba,inicio,archivo,1,verEstado);
-        }else
+            if(ciclo !=1){
+                free(matriz);
+            }
+        }else{
             divisionHorizontal(3,tamanoHorizontal,matrizArriba,medio,archivo,1,verEstado);
+        }
         divisionVertical(sizeAbajo,tamanoHorizontal,matrizAbajo,ciclo+1,archivo,verEstado);
     }
     
 }
 //----------------------------------------------------------
 
-//Entrada:
-//Salida:
-//Función:
-
+//Entrada: 5 enteros los cuales representan el tamaño vertical y horizontal de la matriz, el ciclo recursivo, la desicion de ver el estado por pantalla y la fila que se va a analizar, una matriz de char de 2 dimensiones y un archivo, que es en el cual se escribirá el nuevo estado
+//Salida: No entrega
+//Función: Genera la división horizontal de los datos, para solo trabajar con 2(inicio y final) o 3 columnas a la vez
 void divisionHorizontal(int tamanoVertical,int tamanoHorizontal,char** matriz,int filaAnalisis,FILE * archivo,int ciclo,int verEstado){
     int inicio = 0;
     int medio = 1;
@@ -315,7 +315,6 @@ void divisionHorizontal(int tamanoVertical,int tamanoHorizontal,char** matriz,in
         {
             printf("\n");
         }
-        
     }
     else{
         int sizeIzquierda;
@@ -342,6 +341,9 @@ void divisionHorizontal(int tamanoVertical,int tamanoHorizontal,char** matriz,in
                 matrizDerecha[i][j] = matriz[i][j+sizeIzquierda-2];
             }
         }
+        if(ciclo !=1){
+            free(matriz);
+        }
         if (sizeIzquierda == 2){
             calcularEstado(tamanoVertical,2,matrizIzquierda,filaAnalisis,inicio,archivo,verEstado);
         }else
@@ -352,9 +354,9 @@ void divisionHorizontal(int tamanoVertical,int tamanoHorizontal,char** matriz,in
 }
 //----------------------------------------------------------
 
-//Entrada:
-//Salida:
-//Función:
+//Entrada: 5 enteros los cuales representan el tamaño vertical y horizontal de la matriz, la columna que se va a analizar, la desicion de ver el estado por pantalla y la fila que se va a analizar, una matriz de char de 2 dimensiones y un archivo, que es en el cual se escribirá el nuevo estado
+//Salida: Un caracter adicional al archivo
+//Función: Calcula si una celda debe nacer,morir o seguir viva; agregando su nuevo estado al archivo
 
 void calcularEstado(int tamanoVertical,int tamanoHorizontal,char ** matriz,int fila, int columna,FILE * archivo,int verEstado){
     int vecinasVivas = 0;
@@ -407,7 +409,7 @@ void calcularEstado(int tamanoVertical,int tamanoHorizontal,char ** matriz,int f
 //Salida:
 //Función:
 
-void pasoDeGeneraciones(char * nombreArchivoOriginal ,int generacionActual,int generaciones,char ** matriz,int sizeV,int sizeH,int verEstado){
+void pasoDeGeneraciones(char * nombreArchivoOriginal,int sizeV,int sizeH,int generacionActual,int generaciones,char matriz[sizeV][sizeH+1],int verEstado){
     struct stat st = {0};
     if (stat(nombreArchivoOriginal,&st) == -1){
         mkdir(nombreArchivoOriginal,0700);
@@ -442,7 +444,7 @@ void pasoDeGeneraciones(char * nombreArchivoOriginal ,int generacionActual,int g
         char newMatriz[sizeV][sizeH+1];
         leerLineas(archivo,sizeV+1,newMatriz);
         fclose(archivo);
-        pasoDeGeneraciones(nombreArchivoOriginal,generacionActual+1,generaciones,newMatriz,sizeV,sizeH,verEstado);
+        pasoDeGeneraciones(nombreArchivoOriginal,sizeV,sizeH,generacionActual+1,generaciones,newMatriz,verEstado);
     }
 
 }
@@ -454,7 +456,13 @@ int main()
     char nombre[100];
     char nombreSinExtension[100]="";
     printf("Escriba el nombre del archivo de prueba sin extension: ");
-    gets(nombre);
+    fflush(stdin);
+    fgets(nombre,100,stdin);
+    int longitud = strlen(nombre);
+    if(nombre[longitud-1] == '\n'){
+        nombre[longitud-1] = '\0';
+    }
+    printf("%s\n",nombre);
     strcat(nombreSinExtension,nombre);
     strcat(nombre,".in");
     int existencia = verificarArchivo(nombre);
@@ -476,7 +484,6 @@ int main()
             archivo = fopen(nombre,"r");
             leerLineas(archivo,numero+1,matriz);
             fclose(archivo);
-
             for (int i = 0; i < numero;i++){
                 printf("%s\n",matriz[i]);
             }
@@ -495,7 +502,7 @@ int main()
                 fflush(stdin);
                 presioneEnter();
                 limpiarConsola();
-                pasoDeGeneraciones(nombreSinExtension,1,generaciones,matriz,numero,numero,verEstado);
+                pasoDeGeneraciones(nombreSinExtension,numero,numero,2,generaciones,matriz,verEstado);
             }
         }
     }
