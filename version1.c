@@ -445,7 +445,7 @@ void pasoDeGeneraciones(char * nombreArchivoOriginal,int sizeV,int sizeH,int gen
     }else
     {
         FILE * archivo = fopen(generacion,"r");
-        char newMatriz[sizeV][sizeH+1];
+        char newMatriz[sizeV][sizeH+2];
         leerLineas(archivo,sizeV+1,newMatriz);
         fclose(archivo);
         pasoDeGeneraciones(nombreArchivoOriginal,sizeV,sizeH,generacionActual+1,generaciones,newMatriz,verEstado);
