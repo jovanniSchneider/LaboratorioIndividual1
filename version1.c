@@ -42,6 +42,7 @@ void divisionVertical();
 void divisionHorizontal();
 void calcularEstado();
 void pasoDeGeneraciones();
+int pedirNumero();
 
 //-------------Definición de funciones declaradas------------
 
@@ -149,7 +150,7 @@ int verificarPotenciaDos(int numero){
         return 1;
     }else{
         if(numero%2 == 0){
-            verificarPotenciaDos(numero/2);
+            return verificarPotenciaDos(numero/2);
         }else
             return 0;
     }
@@ -405,9 +406,9 @@ void calcularEstado(int tamanoVertical,int tamanoHorizontal,char ** matriz,int f
 
 //-------------------------------------------------------------
 
-//Entrada:
-//Salida:
-//Función:
+//Entrada: un "string" que representa el nombre del archivo que contiene la matriz, una matriz de char de 2 dimensiones, 5 enteros, que representan el tamaño vertical y horizontal de la matriz, la generacion en la que se encuentra, la cantidad de generaciones a calcular y la desicion de ver el estado por pantalla 
+//Salida: No genera
+//Función: Genera el archivo de salida y utiliza la funcion division vertical para calcular la siguiente generación, esto lo hace de manera recursiva, hasta que la generacion sea igual a la cantidad que se desea
 
 void pasoDeGeneraciones(char * nombreArchivoOriginal,int sizeV,int sizeH,int generacionActual,int generaciones,char matriz[sizeV][sizeH+1],int verEstado){
     struct stat st = {0};
@@ -439,7 +440,7 @@ void pasoDeGeneraciones(char * nombreArchivoOriginal,int sizeV,int sizeH,int gen
     fputc('\n',archivo);
     divisionVertical(sizeV,sizeH,matriz,1,archivo,verEstado);
     fclose(archivo);
-    if (generacionActual == generaciones)
+    if (generacionActual >= generaciones || generaciones <= 1)
     {
         printf("Paso de generaciones finalizado\n");
     }else
@@ -453,62 +454,105 @@ void pasoDeGeneraciones(char * nombreArchivoOriginal,int sizeV,int sizeH,int gen
 
 }
 
+//-----------------------------------------------------------------------
+
+//Entrada:
+//Salida:
+//Funcion:
+
+int pedirNumero(char* string,int cotaInferior,int cotaSuperior){
+    printf("%s ",string);
+    char numero[5];
+    fgets(numero,5,stdin);
+    int longitud = strlen(numero);
+    if(numero[longitud-1] == '\n'){
+        numero[longitud-1] = '\0';
+    }
+    for (int i = 0; i < longitud-1; i++)
+    {
+        if (!(isdigit(numero[i])))
+        {   
+            printf("Ingrese un numero correcto, por favor vuelva a intentarlo\n");
+            return pedirNumero(string,cotaInferior,cotaSuperior);
+        }
+    }
+    int numeroFinal = atoi(numero);
+    if (numeroFinal < cotaInferior || numeroFinal > cotaSuperior){
+        printf("Ingrese un numero correcto, por favor vuelva a intentarlo\n");
+        return pedirNumero(string,cotaInferior,cotaSuperior);
+    }
+    return numeroFinal;
+}
+
+//-----------------------------------------------------------------------
+
+//Entrada: un entero, que representa la decisión de ejecutar el menu principal
+//Salida: no entrega
+//Funcion: Utiliza todas las funciones y representa visualmente el menu del usuario
+
+int menuPrincipal(int seguir){
+    if (seguir == 1)
+    {
+        char nombre[100];
+        char nombreSinExtension[100]="";
+        printf("Escriba el nombre del archivo de prueba sin extension: ");
+        fflush(stdin);
+        fgets(nombre,100,stdin);
+        int longitud = strlen(nombre);
+        if(nombre[longitud-1] == '\n'){
+            nombre[longitud-1] = '\0';
+        }
+        printf("%s\n",nombre);
+        strcat(nombreSinExtension,nombre);
+        strcat(nombre,".in");
+        int existencia = verificarArchivo(nombre);
+        if (existencia == 0)
+        {
+            printf("El documento no existe\n");
+        }else
+        {
+            int numero = verificarPrimeraLinea(nombre,4);
+            if (numero == 0)
+            {
+                printf("El archivo no cumple con los requisitos\n");
+            }else
+            {
+                printf("Archivo: %s\n",nombre);
+                printf("------------Estado inicial-------------\n");
+                char matriz[numero+1][numero+1];
+                FILE * archivo;
+                archivo = fopen(nombre,"r");
+                leerLineas(archivo,numero+1,matriz);
+                fclose(archivo);
+                for (int i = 0; i < numero;i++){
+                    printf("%s\n",matriz[i]);
+                }
+                if (verificarMatriz(numero+1,matriz) == 0){
+                    printf("El archivo no cumple con los requisitos\n");
+                    return 0;
+                }else
+                {
+                    printf("El archivo cumple con los requisitos\n");
+                    int generaciones = pedirNumero("¿Cuantas generaciones desea?(Max 500):",1,500);
+                    int verEstado = pedirNumero("¿Desea ver el cambio de estado en pantalla?\nSí (1)\nNo (2)\nIngrese el numero de su opcion aquí:",1,2);
+                    fflush(stdin);
+                    limpiarConsola();
+                    pasoDeGeneraciones(nombreSinExtension,numero,numero,2,generaciones,matriz,verEstado);
+                }
+            }
+        }
+        seguir = pedirNumero("¿Desea seguir utilizando el programa?\nSí (1)\nNo (2)\nIngrese el numero de su opcion aquí:",1,2);
+        return menuPrincipal(seguir);
+    }else
+    {
+        printf("--------------------Hasta luego---------------\n");
+        return 0;
+    }
+}
+
 //--------------Función/Bloque principal-----------------------
 int main()
 { 
-    presioneEnter();
-    char nombre[100];
-    char nombreSinExtension[100]="";
-    printf("Escriba el nombre del archivo de prueba sin extension: ");
-    fflush(stdin);
-    fgets(nombre,100,stdin);
-    int longitud = strlen(nombre);
-    if(nombre[longitud-1] == '\n'){
-        nombre[longitud-1] = '\0';
-    }
-    printf("%s\n",nombre);
-    strcat(nombreSinExtension,nombre);
-    strcat(nombre,".in");
-    int existencia = verificarArchivo(nombre);
-    if (existencia == 0)
-    {
-        printf("El documento no existe\n");
-    }else
-    {
-        int numero = verificarPrimeraLinea(nombre,4);
-        if (numero == 0)
-        {
-            printf("El archivo no cumple con los requisitos\n");
-        }else
-        {
-            printf("Archivo: %s\n",nombre);
-            printf("------------Estado inicial-------------\n");
-            char matriz[numero+1][numero+1];
-            FILE * archivo;
-            archivo = fopen(nombre,"r");
-            leerLineas(archivo,numero+1,matriz);
-            fclose(archivo);
-            for (int i = 0; i < numero;i++){
-                printf("%s\n",matriz[i]);
-            }
-            if (verificarMatriz(numero+1,matriz) == 0){
-                printf("El archivo no cumple con los requisitos\n");
-                return 0;
-            }else
-            {
-                printf("El archivo cumple con los requisitos\n");
-                int verEstado;
-                int generaciones;
-                printf("¿Cuántas generaciones desea?: ");
-                scanf("%d",&generaciones);
-                printf("¿Desea ver el cambio de estado en pantalla?\nSí (1)\nNo (2)\nIngrese el numero de su opcion aquí: ");
-                scanf("%d",&verEstado);
-                fflush(stdin);
-                presioneEnter();
-                limpiarConsola();
-                pasoDeGeneraciones(nombreSinExtension,numero,numero,2,generaciones,matriz,verEstado);
-            }
-        }
-    }
+    menuPrincipal(1);
     return 0;
 }
