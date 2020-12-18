@@ -10,7 +10,7 @@ AUTOR:
 -20.278.543-3
 -INGENIERÍA CIVIL EN INFORMATICA
 
-VERSIÓN DEL CODIGO: 1.0
+VERSIÓN DEL CODIGO: 2.2
 */
 
 
@@ -502,7 +502,6 @@ int menuPrincipal(int seguir){
         if(nombre[longitud-1] == '\n'){
             nombre[longitud-1] = '\0';
         }
-        printf("%s\n",nombre);
         strcat(nombreSinExtension,nombre);
         strcat(nombre,".in");
         int existencia = verificarArchivo(nombre);
