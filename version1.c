@@ -456,9 +456,9 @@ void pasoDeGeneraciones(char * nombreArchivoOriginal,int sizeV,int sizeH,int gen
 
 //-----------------------------------------------------------------------
 
-//Entrada:
-//Salida:
-//Funcion:
+//Entrada: un "string" que se utilizará para decirle al usuario que debe ingresar y 2 enteros, que representan el numero minimo y maximo respectivamente que el usuario puede ingresar
+//Salida: un entero, que es el numero ingresado por el usuario
+//Funcion: Pide un entero hasta que se ingrese un numero y que esté dentro del rango esperado
 
 int pedirNumero(char* string,int cotaInferior,int cotaSuperior){
     printf("%s ",string);
