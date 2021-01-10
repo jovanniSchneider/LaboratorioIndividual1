@@ -13,7 +13,7 @@ typedef struct estructuraGrupo
 
 typedef struct estado
 {
-    int antorcha;
+    int linterna;
     int id;
     int idAnterior;
     int tiempoTotal;

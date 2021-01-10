@@ -62,6 +62,18 @@ int pedirNumero(char* string,int cotaInferior,int cotaSuperior){
     return numeroFinal;
 }
 
+
+//--------------------------------------------------------
+
+//Entrada: No recibe
+//Salida: No entrega
+//Función: Detiene el flujo del programa hasta que se presione enter
+
+void presioneEnter(){
+    printf("Presione enter para continuar...\n");
+    getchar();
+}
+
 //------------------------------------------------------
 
 //Entrada: Un puntero a estructuraGrupo
@@ -88,14 +100,14 @@ void pedirDatos(estructuraGrupo * grupo){
 
 //------------------------------------------------------
 
-//Entrada:
-//Salida:
-//Funcion:
+//Entrada: un puntero a entero que representa el id correlativo pasado por referencia, un entero que representa el id del estado anterior, un entero que representa el tiempo total que ha transcurrido hasta antes de la transicion, un entero que representa el tiempo empleado en la transicion, 2 estructuras del tipo estructuraGrupo que representan el grupo que está en la isla y el grupo que está en la ciudad, un entero que representa la posición de la linterna.
+//Salida: una estructura del tipo estado, que representa el nuevo estado que se creó
+//Funcion: Crea un nuevo estado
 
 estado crearEstado(int * id,int idAnterior,int tiempoTotal,int tiempoTransicion,estructuraGrupo grupoIsla, estructuraGrupo grupoCiudad,int posicionAntorcha){
     *id = *id+1;
     estado nuevoEstado;
-    nuevoEstado.antorcha = posicionAntorcha;
+    nuevoEstado.linterna = posicionAntorcha;
     nuevoEstado.id = *id;
     nuevoEstado.idAnterior = idAnterior;
     nuevoEstado.tiempoTotal = tiempoTotal + tiempoTransicion;
@@ -106,16 +118,16 @@ estado crearEstado(int * id,int idAnterior,int tiempoTotal,int tiempoTransicion,
 
 //------------------------------------------------------
 
-//Entrada:
-//Salida:
-//Funcion:
+//Entrada: un puntero a entero que representa el id correlativo pasado por referencia,
+//Salida: una estructura del tipo estado
+//Funcion: un estado inicial
 
-estado crearEstadoInicial(int * id, int idAnterior, estructuraGrupo grupoIsla){
+estado crearEstadoInicial(int * id, estructuraGrupo grupoIsla){
     *id = *id+1;
     estado nuevoEstado;
-    nuevoEstado.antorcha = 1;
+    nuevoEstado.linterna = 1;
     nuevoEstado.id = *id;
-    nuevoEstado.idAnterior = idAnterior;
+    nuevoEstado.idAnterior = 0;
     nuevoEstado.tiempoTotal = 0;
     nuevoEstado.grupoIsla = grupoIsla;
     estructuraGrupo grupoCiudad;
@@ -128,11 +140,11 @@ estado crearEstadoInicial(int * id, int idAnterior, estructuraGrupo grupoIsla){
 
 //------------------------------------------------------
 
-//Entrada:
-//Salida:
-//Funcion:
+//Entrada: un array de estructuras del tipo estado, un puntero a entero que es la cantidad de elementos que tiene la lista pasado por referencia, y una estructura del tipo estado que será la que se agregue.
+//Salida: un array de estructuras del tipo estado con un elemento mas que el ingresado
+//Funcion: agrega un elemento a un array de estructuras
 
-estado * agregarEstado(estado * lista,int * cantEstados,estado nuevoEstado){
+estado * agregarEstadoAnchura(estado * lista,int * cantEstados,estado nuevoEstado){
     estado * nuevaLista = (estado *)malloc(sizeof(estado)*(*cantEstados+1));
     for (int i = 0; i < *cantEstados; i++)
     {
@@ -146,9 +158,27 @@ estado * agregarEstado(estado * lista,int * cantEstados,estado nuevoEstado){
 
 //------------------------------------------------------
 
-//Entrada:
-//Salida:
-//Funcion:
+//Entrada: un array de estructuras del tipo estado, un puntero a entero que es la cantidad de elementos que tiene la lista pasado por referencia, y una estructura del tipo estado que será la que se agregue.
+//Salida: un array de estructuras del tipo estado con un elemento mas que el ingresado
+//Funcion: agrega un elemento a un array de estructuras
+
+estado * agregarEstadoProfundidad(estado * lista,int * cantEstados,estado nuevoEstado){
+    estado * nuevaLista = (estado *)malloc(sizeof(estado)*(*cantEstados+1));
+    nuevaLista[0] = nuevoEstado;
+    for (int i = 1; i < *cantEstados+1; i++)
+    {
+        nuevaLista[i] = lista[i-1];
+    }
+    *cantEstados = *cantEstados+1;
+    free(lista);
+    return nuevaLista;
+}
+
+//------------------------------------------------------
+
+//Entrada: un array de estructuras del tipo estado, un puntero a entero que es la cantidad de elementos que tiene la lista pasado por referencia
+//Salida: un array de estructuras del tipo estado con un elemento menos que el ingresado
+//Funcion: Elimina el primer elemento de una lista de estados
 
 estado * eliminarEstado(estado * lista,int * cantEstados){
     estado * nuevaLista = (estado *)malloc(sizeof(estado)*(*cantEstados-1));
@@ -163,9 +193,9 @@ estado * eliminarEstado(estado * lista,int * cantEstados){
 
 //------------------------------------------------------
 
-//Entrada:
-//Salida:
-//Funcion:
+//Entrada: un array de estructuras del tipo integrante, un puntero a entero que es la cantidad de elementos que tiene la lista pasado por referencia, un entero que representa la cantidad de elementos a sacar y un array de enteros con las posiciones de los elementos a sacar.
+//Salida: un array de estructuras del tipo integrante con 1 o 2 elementos menos que el ingresado
+//Funcion: Saca 2 o 1 elementos de un array de integrantes
 
 integrante * sacarIntegrantes(integrante * integrantesActuales,int * cantIntegrantes,int cantASacar,int * posiciones){
     integrante * nuevosIntegrantes = (integrante *)malloc(sizeof(integrante)*(*cantIntegrantes-cantASacar));
@@ -201,9 +231,9 @@ integrante * sacarIntegrantes(integrante * integrantesActuales,int * cantIntegra
 
 //------------------------------------------------------
 
-//Entrada:
-//Salida:
-//Funcion:
+//Entrada: un array de estructuras del tipo integrante, un puntero a entero que es la cantidad de elementos que tiene la lista pasado por referencia y una estructura del tipo integrante que será la que se agregue
+//Salida: un array de estructuras del tipo integrante con un elemento mas que el ingresado
+//Funcion: agrega un elemento al array de integrantes
 
 integrante * agregarIntegrantes(integrante * lista,int * cantidadIntegrantes,integrante nuevoIntegrante){
     integrante * nuevaLista = (integrante *)malloc(sizeof(integrante)*(*cantidadIntegrantes+1));
@@ -219,9 +249,9 @@ integrante * agregarIntegrantes(integrante * lista,int * cantidadIntegrantes,int
 
 //------------------------------------------------------
 
-//Entrada:
-//Salida:
-//Funcion:
+//Entrada: una estructura del tipo estado, un array de enteros que representa las posiciones de los integrantes del grupo isla que cruzarán, un entero que representa la cantidad de integrantes que cruzarán, y un puntero a entero que representa el id actual pasado por referencia.
+//Salida: un nuevo estado con la transición de cruzar puente realizada
+//Funcion: Pasa 2 elementos del grupo isla al grupo ciudad calculando su tiempo de cruce y creando un nuevo estado
 
 estado cruzarPuente(estado estadoActual,int * posiciones,int cantPosiciones,int * id){
     estructuraGrupo grupoIsla = estadoActual.grupoIsla;
@@ -257,9 +287,9 @@ estado cruzarPuente(estado estadoActual,int * posiciones,int cantPosiciones,int 
 
 //------------------------------------------------------
 
-//Entrada:
-//Salida:
-//Funcion:
+//Entrada: una estructura del tipo estado, un array de enteros que representala posición del integrante del grupo ciudad que cruzará y un puntero a entero que representa el id actual pasado por referencia.
+//Salida: un nuevo estado con la transición devolverse realizada
+//Funcion: Pasa un elemento del grupo ciudad al grupo isla agregando su tiempo de cruce y creando un nuevo estado
 
 estado devolverse(estado estadoActual,int * posicion,int * id){
     estructuraGrupo grupoIsla = estadoActual.grupoIsla;
@@ -286,9 +316,9 @@ estado devolverse(estado estadoActual,int * posicion,int * id){
 
 //------------------------------------------------------
 
-//Entrada:
-//Salida:
-//Funcion:
+//Entrada: una estructura del tipo estado
+//Salida: un entero, un 1 si es el estado final y un 0 en caso contrario
+//Funcion: verifica si un estado es el estado final
 
 int esFinal(estado estadoActual){
     if (estadoActual.grupoIsla.cantidadIntegrantes == 0 && estadoActual.tiempoTotal <= estadoActual.grupoIsla.tiempoLimite){
@@ -299,14 +329,15 @@ int esFinal(estado estadoActual){
 
 //------------------------------------------------------
 
-//Entrada:
-//Salida:
-//Funcion:
+//Entrada: un array de estructuras del tipo estado, un entero que representa la cantidad de elementos que contiene el array y una estructura del tipo estado que representa el estado a verificar
+//Salida: un entero, un 1 si el estado está en el array y un 0 en caso contrario
+//Funcion: verifica si una estructura del tipo estado está en un array
 
 int verificarExistencia(estado * lista,int cantEstados,estado estadoABuscar){
-    int contador = 0;
+    int contador;
     for (int i = 0; i < cantEstados; i++)
     {
+        contador = 0;
         for (int j = 0; j < estadoABuscar.grupoIsla.cantidadIntegrantes; j++)
         {
             for (int k = 0; k < lista[i].grupoIsla.cantidadIntegrantes; k++)
@@ -320,21 +351,21 @@ int verificarExistencia(estado * lista,int cantEstados,estado estadoABuscar){
         }
         if (contador == estadoABuscar.grupoIsla.cantidadIntegrantes && contador == lista[i].grupoIsla.cantidadIntegrantes)
         {
-            if(lista[i].tiempoTotal == estadoABuscar.tiempoTotal)
-            return 1;
+            if(lista[i].tiempoTotal == estadoABuscar.tiempoTotal){
+                return 1;
+            }
         }
     }
-
     return 0;
 }
 
 //------------------------------------------------------
 
-//Entrada:
-//Salida:
-//Funcion:
+//Entrada: un array de estructuras del tipo estado, una estructura del tipo estado que representa el estado final, un entero que representa la cantidad de estados, un array de string y un entero que representa la cantidad de string presentes en el arreglo
+//Salida: no entrega
+//Funcion: Muestra la solución del problema devolviendose desde el estado final al inicial anotando todas las transiciones realizadas
 
-int mostrarSolucion(estado * listaEstados, estado estadoFinal,int cantidadEstados,char ** stringsFinal, int * cantidadString){
+void mostrarSolucion(estado * listaEstados, estado estadoFinal,int cantidadEstados,char ** stringsFinal, int * cantidadString){
     char ** nuevaLista = (char**)malloc(sizeof(char*)*(*cantidadString+1));
     for (int i = 0; i < *cantidadString; i++)
     {
@@ -349,12 +380,12 @@ int mostrarSolucion(estado * listaEstados, estado estadoFinal,int cantidadEstado
         {
             printf("%s",stringsFinal[i]);
         }
-        return 0;
     }else{
         for (int i = 0; i < cantidadEstados; i++)
         {
             if(listaEstados[i].id == estadoFinal.idAnterior){
-                return mostrarSolucion(listaEstados,listaEstados[i],cantidadEstados,nuevaLista,cantidadString);
+                mostrarSolucion(listaEstados,listaEstados[i],cantidadEstados,nuevaLista,cantidadString);
+                free(nuevaLista);
             }
         }
     }
