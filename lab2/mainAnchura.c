@@ -29,7 +29,7 @@ int main()
    return menuPrincipal(); 
 }
 
-int menuPrincipal(){
+int menuPrincipal(int algoritmoDeBusqueda){
     estructuraGrupo grupo;
     limpiarConsola();
     printf("1.Ingresar la información del grupo para cruzar\n");
@@ -49,6 +49,26 @@ int menuPrincipal(){
     case 1:
         grupo.cantidadIntegrantes = 4;
         pedirDatos(&grupo);
+        printf("¿Desea cambiar el algoritmo de busqueda?\nAlgoritmo actual: ");
+        switch (algoritmoDeBusqueda)
+        {
+        case 1:
+            printf("Anchura iterativo\n");
+            break;
+        
+        case 2:
+            printf("Profundidad iterativo\n");
+            break;
+        }
+        int cambiarAlgoritmo = pedirNumero("Ingrese aca su elección (1.Sí/2.No): ",1,2);
+        switch (cambiarAlgoritmo)
+        {
+        case 1:
+            printf("1.Anchura iterativo");
+            printf("2.Profundidad iterativo");
+            algoritmoDeBusqueda = pedirNumero("Ingrese aca el indice de su opcion: ",1,2);
+            break;
+        }
         abiertos = agregarEstadoAnchura(abiertos,&cantidadAbiertos,crearEstadoInicial(&correlativoId,grupo));
         while (cantidadAbiertos > 0)
         {
@@ -80,8 +100,17 @@ int menuPrincipal(){
                                     siguiente = cruzarPuente(actual,posiciones,2,&correlativoId);
                                     if (verificarExistencia(abiertos,cantidadAbiertos,siguiente)==0 && verificarExistencia(cerrados,cantidadCerrados,siguiente)==0)
                                     {
-                                        abiertos = agregarEstadoAnchura(abiertos,&cantidadAbiertos,siguiente);
-            
+                                        switch (algoritmoDeBusqueda)
+                                        {
+                                        case 1:
+                                            abiertos = agregarEstadoAnchura(abiertos,&cantidadAbiertos,siguiente);
+                                            break;
+                                        
+                                        case 2:
+                                            abiertos = agregarEstadoProfundidad(abiertos,&cantidadAbiertos,siguiente);
+                                            break;
+                                        }
+                                        
                                     }
                                     
                                 }
@@ -97,8 +126,16 @@ int menuPrincipal(){
                             siguiente = devolverse(actual,posiciones,&correlativoId);
                             if (verificarExistencia(abiertos,cantidadAbiertos,siguiente)==0 && verificarExistencia(cerrados,cantidadCerrados,siguiente)==0)
                             {
-                                abiertos = agregarEstadoAnchura(abiertos,&cantidadAbiertos,siguiente);
-                               
+                                switch (algoritmoDeBusqueda)
+                                    {
+                                    case 1:
+                                        abiertos = agregarEstadoAnchura(abiertos,&cantidadAbiertos,siguiente);
+                                        break;
+                                    
+                                    case 2:
+                                        abiertos = agregarEstadoProfundidad(abiertos,&cantidadAbiertos,siguiente);
+                                        break;
+                                    }
                             }
                         }
                     
