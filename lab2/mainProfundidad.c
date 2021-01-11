@@ -32,9 +32,9 @@ int main()
 int menuPrincipal(){
     estructuraGrupo grupo;
     limpiarConsola();
-    printf("1.Ingresar la información del grupo para cruzar\n");
+    printf("1.Ingresar la informacion del grupo para cruzar\n");
     printf("2.Salir\n");
-    int decision = pedirNumero("Ingrese su elección acá (1 o 2):",1,2);
+    int decision = pedirNumero("Ingrese su eleccion aca (1 o 2):",1,2);
     limpiarConsola();   
     int correlativoId = 0;
     int cantidadAbiertos = 0;
