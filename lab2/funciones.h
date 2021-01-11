@@ -375,7 +375,7 @@ void mostrarSolucion(estado * listaEstados, estado estadoFinal,int cantidadEstad
     *cantidadString = *cantidadString+1;
     if (estadoFinal.idAnterior == 0)
     {
-        printf("----Solución----\n");
+        printf("----Solucion----\n");
         for (int i = 0; i < *cantidadString-1; i++)
         {
             printf("%s",stringsFinal[i]);
