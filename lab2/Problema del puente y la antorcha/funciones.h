@@ -76,23 +76,32 @@ void presioneEnter(){
 
 //------------------------------------------------------
 
-//Entrada: Un puntero a estructuraGrupo
+//Entrada: Un puntero a estructuraGrupo y un entero que representa la deicison de cambiar el nombre
 //Salida: No retorna
 //Funcion: Pide y guarda el nombre y tiempo de cruce de cada integrante, ademas de pedir el tiempo limite para cruzar
 
-void pedirDatos(estructuraGrupo * grupo){
+void pedirDatos(estructuraGrupo * grupo,int cambiarNombre){
     integrante * integrantes = (integrante *)malloc(sizeof(integrante)*grupo->cantidadIntegrantes);
-    char nombre[100];
+    char aux[100];
+    strcpy(integrantes[0].nombre,"Juan");
+    strcpy(integrantes[1].nombre,"Paola");
+    strcpy(integrantes[2].nombre,"Diego");
+    strcpy(integrantes[3].nombre,"Jazmin");
     for (int i = 0; i < grupo->cantidadIntegrantes; i++)
-    {
-        printf("Ingrese el nombre del integrante: ");
-        fgets(nombre,100,stdin);
-        int longitud = strlen(nombre);
-        if(nombre[longitud-1] == '\n'){
-            nombre[longitud-1] = '\0';
+    {   if (cambiarNombre == 1)
+        {
+            printf("Ingrese el nombre del integrante: ");
+            fgets(aux,100,stdin);
+            int longitud = strlen(aux);
+            if(aux[longitud-1] == '\n'){
+                aux[longitud-1] = '\0';
+            }
+            strcpy(integrantes[i].nombre,aux);
         }
-        strcpy(integrantes[i].nombre,nombre);
-        integrantes[i].tiempoEnPasar = pedirNumero("Ingrese el tiempo que demora en cruzar (minutos):",1,1000);
+        strcpy(aux,"Ingrese el tiempo que demora en cruzar ");
+        strcat(aux,integrantes[i].nombre);
+        strcat(aux," (minutos):");
+        integrantes[i].tiempoEnPasar = pedirNumero(aux,1,1000);
     }
     grupo->integrantes = integrantes;
     grupo->tiempoLimite = pedirNumero("Ingrese el tiempo limite que se dispone para cruzar",1,1000);
